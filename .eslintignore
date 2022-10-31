@@ -1,0 +1,8 @@
+/dist
+/build
+node_modules/
+*.html
+*.test.js
+*.json
+
+vite.config.ts
