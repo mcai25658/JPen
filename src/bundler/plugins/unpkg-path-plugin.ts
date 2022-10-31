@@ -6,9 +6,7 @@ export const unpkgPathPlugin = () => {
     setup(build: esbuild.PluginBuild) {
       // Handle root entry file of index.js
       // args.path === index.js
-      build.onResolve({ filter: /(^index\.js$)/ }, (args) => {
-        console.log(args);
-
+      build.onResolve({ filter: /(^index\.js$)/ }, () => {
         return { path: 'index.js', namespace: 'a' };
       });
 

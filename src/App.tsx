@@ -1,94 +1,63 @@
-import * as esBuild from 'esbuild-wasm';
-import { useEffect, useState, useRef } from 'react';
+import { useState, useEffect } from 'react';
 
-import { fetchPlugin } from './plugins/fetch-plugin';
-import { unpkgPathPlugin } from './plugins/unpkg-path-plugin';
+import { bundler, startService } from './bundler';
+import { CodeEditor } from './components/CodeEditorComponent';
+import { Preview } from './components/Preview';
 
-const html = `
-<html>
-  <head></head>
-  <body>
-    <div id='root'></div>
-    <script>
-      window.addEventListener('message', (event) => {
-        try {
-          eval(event.data)
-        } catch (error) {
-          const root = document.querySelector('#root');
-          root.innerHTML = 
-          '<div style="color: red";><h4>Runtime Error</h4>' 
-          + error + 
-          '</div>'
+import './main.scss';
 
-          console.error(error)
-        }
-      }, false)
-    </script>
-  </body>
-</html>
+const defaultCode = `
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+
+const App = () => {
+  return (
+    <div className="test">
+      <h1>HI!</h1>
+    </div>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
 `;
 
 export const App = () => {
-  const [value, setValue] = useState('');
+  const [input, setInput] = useState(defaultCode);
+  const [code, setCode] = useState('');
+  const [initial, setInitial] = useState(false);
 
-  const iframeRef = useRef<any>();
-
-  const [initialized, setInitialized] = useState(false);
-
-  const startService = async () => {
-    if (initialized) return;
-    try {
-      await esBuild.initialize({
-        worker: true,
-        // wasmURL: '/public/esbuild.wasm',
-        wasmURL: 'https://unpkg.com/esbuild-wasm@0.15.12/esbuild.wasm',
-      });
-      setInitialized(true);
-    } catch (error) {
-      console.log(error);
-    }
+  const onClick = async () => {
+    if (!initial) return;
+    const output = await bundler(input);
+    setCode(output);
   };
 
   useEffect(() => {
-    startService();
-    // eslint-disable-next-line
+    const start = async () => {
+      const result = await startService();
+      if (!result) return;
+      setInitial(true);
+    };
+
+    start();
   }, []);
-
-  const onClick = async () => {
-    if (!initialized) return;
-
-    iframeRef.current.srcdoc = html;
-
-    const env = ['process', 'env', 'NODE_ENV'].join('.');
-
-    try {
-      const result = await esBuild.build({
-        bundle: true,
-        plugins: [unpkgPathPlugin(), fetchPlugin(value)],
-        entryPoints: ['index.js'],
-        write: false,
-        define: {
-          [env]: '"production"',
-          global: 'window',
-        },
-      });
-
-      iframeRef.current.contentWindow.postMessage(result?.outputFiles[0]?.text, '*');
-    } catch (err) {
-      alert(err);
-    }
-  };
 
   return (
     <div>
-      <textarea value={value} onChange={({ target }) => setValue(target.value)} />
+      <CodeEditor
+        initialValue={defaultCode}
+        onChange={(value) => {
+          setInput(value);
+        }}
+      />
+
       <div>
         <button onClick={onClick} type="button">
           submit
         </button>
       </div>
 
-      <iframe ref={iframeRef} sandbox="allow-scripts" srcDoc={html} title="code" />
+      <Preview code={code} />
     </div>
   );
 };
