@@ -7,16 +7,12 @@ import { Preview } from './components/Preview';
 import './main.scss';
 
 const defaultCode = `
-import React from 'react';
+import React from 'react'
 import ReactDOM from 'react-dom/client';
 
 const App = () => {
-  return (
-    <div className="test">
-      <h1>HI!</h1>
-    </div>
-  );
-};
+  return <h1>hi</h1>
+}
 
 ReactDOM.createRoot(document.getElementById('root')).render(<App />);
 `;
