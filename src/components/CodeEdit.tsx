@@ -5,7 +5,7 @@ import parser from 'prettier/parser-babel';
 import { useRef, useCallback } from 'react';
 
 import 'bulmaswatch/superhero/bulmaswatch.min.css';
-import styles from './CodeEditorComponent.module.scss';
+import styles from './CodeEdit.module.scss';
 
 interface CodeEditorProps {
   initialValue: string;
@@ -70,7 +70,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ initialValue, onChange }
   };
 
   return (
-    <div className={styles.container}>
+    <div className={styles['edit-container']}>
       <button
         className={`button is-primary is-small ${styles['button-format']}`}
         onClick={onFormatClick}
@@ -87,7 +87,6 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ initialValue, onChange }
         defaultLanguage="javascript"
         theme="vs-dark"
         language="javascript"
-        height="500px"
         options={{
           wordWrap: 'on',
           minimap: { enabled: false },
@@ -95,8 +94,8 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ initialValue, onChange }
           folding: false,
           lineNumbersMinChars: 3,
           fontSize: 16,
-          // scrollBeyondLastLine: true,
-          // automaticLayout: true,
+          scrollBeyondLastLine: true,
+          automaticLayout: true,
         }}
       />
     </div>

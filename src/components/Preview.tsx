@@ -1,15 +1,15 @@
 import { useRef, useEffect } from 'react';
 
+import './Preview.scss';
+
 interface PreviewProps {
   code: string;
 }
-
 const DEFAULT_HTML = `
 <html>
   <head></head>
   <body>
     <div id='root'>
-      <h1>test</h1>
     </div>
     <script>
       window.addEventListener('message', (event) => {
@@ -34,9 +34,13 @@ export const Preview: React.FC<PreviewProps> = ({ code }) => {
   const iframeRef = useRef<any>();
 
   useEffect(() => {
-    iframeRef.current.srcdoc = DEFAULT_HTML;
+    // iframeRef.current.srcdoc = DEFAULT_HTML;
     iframeRef.current.contentWindow.postMessage(code, '*');
   }, [code]);
 
-  return <iframe ref={iframeRef} sandbox="allow-scripts" srcDoc={DEFAULT_HTML} title="code" />;
+  return (
+    <div className="preview-wrapper">
+      <iframe ref={iframeRef} sandbox="allow-scripts" srcDoc={DEFAULT_HTML} title="code" />
+    </div>
+  );
 };
