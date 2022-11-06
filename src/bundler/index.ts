@@ -19,7 +19,12 @@ export const startService = async (): Promise<boolean> => {
   }
 };
 
-export const bundler = async (rawCode: string): Promise<string> => {
+type Bundler = {
+  code: string;
+  err: string;
+};
+
+export const bundler = async (rawCode: string): Promise<Bundler> => {
   try {
     const result = await esBuild.build({
       bundle: true,
@@ -32,9 +37,14 @@ export const bundler = async (rawCode: string): Promise<string> => {
       },
     });
 
-    return result?.outputFiles[0]?.text;
+    return {
+      code: result?.outputFiles[0]?.text,
+      err: '',
+    };
   } catch (error) {
-    console.log(error);
-    return 'error';
+    return {
+      code: '',
+      err: error.message,
+    };
   }
 };

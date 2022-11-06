@@ -20,12 +20,14 @@ ReactDOM.createRoot(document.getElementById('root')).render(<App />);
 export const CodeCell = ({ initial }: { initial: boolean }) => {
   const [input, setInput] = useState(defaultCode);
   const [code, setCode] = useState('');
+  const [err, setErr] = useState('');
 
   useEffect(() => {
     const timer = setTimeout(async () => {
       if (!initial) return;
       const output = await bundler(input);
-      setCode(output);
+      setCode(output.code);
+      setErr(output.err);
     }, 700);
 
     return () => {
@@ -39,7 +41,7 @@ export const CodeCell = ({ initial }: { initial: boolean }) => {
         <ReSizeable direction="horizontal">
           <CodeEditor initialValue={defaultCode} onChange={(value) => setInput(value)} />
         </ReSizeable>
-        <Preview code={code} />
+        <Preview code={code} bundleErr={err} />
       </div>
     </ReSizeable>
   );
