@@ -34,8 +34,11 @@ export const Preview: React.FC<PreviewProps> = ({ code }) => {
   const iframeRef = useRef<any>();
 
   useEffect(() => {
-    // iframeRef.current.srcdoc = DEFAULT_HTML;
-    iframeRef.current.contentWindow.postMessage(code, '*');
+    iframeRef.current.srcdoc = DEFAULT_HTML;
+
+    setTimeout(() => {
+      iframeRef.current.contentWindow.postMessage(code, '*');
+    }, 50);
   }, [code]);
 
   return (

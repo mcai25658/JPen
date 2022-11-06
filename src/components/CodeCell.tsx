@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { bundler } from '../bundler';
 
@@ -21,11 +21,17 @@ export const CodeCell = ({ initial }: { initial: boolean }) => {
   const [input, setInput] = useState(defaultCode);
   const [code, setCode] = useState('');
 
-  const onClick = async () => {
-    if (!initial) return;
-    const output = await bundler(input);
-    setCode(output);
-  };
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      if (!initial) return;
+      const output = await bundler(input);
+      setCode(output);
+    }, 700);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [input, initial]);
 
   return (
     <ReSizeable direction="vertical">
